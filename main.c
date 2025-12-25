@@ -8,47 +8,62 @@ int main(int argc, char *argv[])
 {
   OPCODE *opcodes;
   int opCount = 0;
+  char slice[100] = {};
   char output[30000] = {};
 
-  char *filename = malloc(strlen(argv[1]));
+  char *filename = malloc(strlen(argv[1]) + 1);
   strcpy(filename, argv[1]);
 
   opCount = parse(filename, &opcodes);
 
   printf("\n%d \t %d \t %d\n", opcodes[0], opcodes[0] <= 1, opCount);
 
-  strcat(output, "#include <stdio.h>\n\nint main() {\n\tchar memory[3000] = {0};\nchar *ptr = memory;\n");
+  strcat(output, "#include <stdio.h>\n\nint main() {\n\tchar memory[3000] = {0};\n\tchar *ptr = memory;\n");
+
+  int depth = 1;
 
   int i;
+  int j;
   for (i = 0; i < opCount; i++)
   {
+    strcpy(slice, "");
+    for (j = 0; j < depth; j++) {
+      if (opcodes[i] == END && j == depth - 1)
+        break;
+      strcat(slice, "\t");
+    }
+
     switch (opcodes[i])
     {
     case RIGHT:
-      strcat(output, "++ptr;\n");
+      strcat(slice, "++ptr;\n");
       break;
     case LEFT:
-      strcat(output, "--ptr;\n");
+      strcat(slice, "--ptr;\n");
       break;
     case INC:
-      strcat(output, "++*ptr;\n");
+      strcat(slice, "++*ptr;\n");
       break;
     case DEC:
-      strcat(output, "--*ptr;\n");
+      strcat(slice, "--*ptr;\n");
       break;
     case OUTPUT:
-      strcat(output, "putchar(*ptr);\n");
+      strcat(slice, "putchar(*ptr);\n");
       break;
     case INPUT:
-      strcat(output, "*ptr = getchar();\n");
+      strcat(slice, "*ptr = getchar();\n");
       break;
     case LOOP_START:
-      strcat(output, "while (*ptr) {\n");
+      depth++;
+      strcat(slice, "while (*ptr) {\n");
       break;
     case END:
-      strcat(output, "}\n");
+      depth--;
+      strcat(slice, "}\n");
       break;
     }
+
+    strcat(output, slice);
   }
 
   strcat(output, "return 0;\n}");

@@ -48,6 +48,8 @@ int parse(char filename[], OPCODE **opcodes)
     inChar = fgetc(fp);
   }
 
+  fclose(fp);
+
   return opCount;
 }
 
@@ -86,7 +88,7 @@ OPCODE getOpcode(char inChar)
     opcode = NONE;
   }
 
-  if (opcode == NONE)
+  // if (opcode == NONE)
    // printf("-1");
   return opcode;
 }
