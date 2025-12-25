@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MEMORY_SIZE 3000
+
 int buildJumpTable(OPCODE *opcodes, int opCount, int *jumpTable);
 
 int main(int argc, char *argv[]) {
@@ -15,7 +17,7 @@ int main(int argc, char *argv[]) {
   OPCODE *opcodes;
   int opCount = 0;
   
-  char memory[3000] = {0};
+  char memory[MEMORY_SIZE] = {0};
   char *ptr = memory;
 
   opCount = parse(argv[1], &opcodes);
@@ -34,9 +36,21 @@ int main(int argc, char *argv[]) {
     {
     case RIGHT:
       ++ptr;
+      if (ptr >= memory + MEMORY_SIZE) {
+        fprintf(stderr, "Exceeded memory size");
+        free(opcodes);
+        free(jumpTable);
+        return 1;
+      }
       break;
     case LEFT:
       --ptr;
+      if (ptr < memory) {
+        fprintf(stderr, "Pointer went negative");
+        free(opcodes);
+        free(jumpTable);
+        return 1;
+      }
       break;
     case INC:
       ++*ptr;
@@ -47,9 +61,11 @@ int main(int argc, char *argv[]) {
     case OUTPUT:
       putchar(*ptr);
       break;
-    case INPUT:
-      *ptr = getchar();
+    case INPUT: {
+      int ch = getchar();
+      *ptr = (ch == EOF) ? 0 : (char)ch;
       break;
+    }
     case LOOP_START:
       if (*ptr == 0) {
         i = jumpTable[i];

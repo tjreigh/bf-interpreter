@@ -9,6 +9,10 @@ int parse(char filename[], OPCODE **opcodes) {
   int opCount = 0;
 
   *opcodes = malloc(capacity * sizeof(OPCODE));
+  if (opcodes == NULL) {
+    fprintf(stderr, "Memory allocation failed\n");
+    return -1;
+  }
 
   FILE *fp = fopen(filename, "r");
   if (fp == NULL)
@@ -25,7 +29,13 @@ int parse(char filename[], OPCODE **opcodes) {
       // check if we need to grow the opcodes string
       if (opCount >= capacity) {
         capacity *= 2;
-        *opcodes = realloc(*opcodes, capacity * sizeof(OPCODE));
+        void *temp = realloc(*opcodes, capacity * sizeof(OPCODE));
+        if (temp == NULL) {
+          fprintf(stderr, "Memory allocation failed\n");
+          free(opcodes);
+          return -1;
+        }
+        *opcodes = temp;        
       }
 
       (*opcodes)[opCount] = opcode;
@@ -34,7 +44,13 @@ int parse(char filename[], OPCODE **opcodes) {
   }
 
   // clean up any wasted memory
-  *opcodes = realloc(*opcodes, opCount * sizeof(OPCODE));
+  void *temp = realloc(*opcodes, opCount * sizeof(OPCODE));
+  if (temp == NULL) {
+    fprintf(stderr, "Memory allocation failed\n");
+    free(opcodes);
+    return -1;
+  }
+  *opcodes = temp; 
 
   fclose(fp);
   return opCount;
