@@ -1,5 +1,7 @@
 # bf-interpreter
-except it's really only a transpiler (for now)
+world's most sophisticated program for the world's most sophisticated programming language. just trust me.
+
+see the [esolangs wiki page](https://esolangs.org/wiki/Brainfuck) for more info on the language.
 
 ## Usage
 
@@ -10,18 +12,8 @@ make
 
 2. Run it with a filename for a bf program
 ```
-./main.e [program.bf]
+./main.e <program.bf>
 ./main.e examples/hello.bf
 ```
 
-3. Compile the output C code
-```
-gcc out.c
-```
-
-4. Run the output
-```
-./a.out
-```
-
-5. profit
+3. profit

@@ -4,12 +4,11 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define MAX_LINE 99999
-
-int parse(char filename[], OPCODE **opcodes)
-{
+int parse(char filename[], OPCODE **opcodes) {
+  int capacity = 100;
   int opCount = 0;
-  char line[MAX_LINE] = {};
+
+  *opcodes = malloc(capacity * sizeof(OPCODE));
 
   FILE *fp = fopen(filename, "r");
   if (fp == NULL)
@@ -18,43 +17,30 @@ int parse(char filename[], OPCODE **opcodes)
     exit(1);
   }
 
-  while (fgets(line, sizeof(line), fp))
-  {
-    for (int i = 0; i < strlen(line); i++)
-    {
-      OPCODE opcode = getOpcode(line[i]);
-      //printf("%d ", opcode);
-      if (opcode != NONE)
-        opCount++;
-    }
-  }
-
-  fclose(fp);
-
-  *opcodes = malloc(opCount * sizeof(OPCODE));
-
-  int i = 0;
-  fp = fopen(filename, "r");
-  char inChar = fgetc(fp);
-  while (inChar != EOF)
-  {
+  char inChar;
+  while ((inChar = fgetc(fp)) != EOF) {
     OPCODE opcode = getOpcode(inChar);
-    if (opcode != NONE)
-    {
-      (*opcodes)[i] = opcode;
-      i++;
-      printf("%d", opcode);
+
+    if (opcode != NONE) {
+      // check if we need to grow the opcodes string
+      if (opCount >= capacity) {
+        capacity *= 2;
+        *opcodes = realloc(*opcodes, capacity * sizeof(OPCODE));
+      }
+
+      (*opcodes)[opCount] = opcode;
+      opCount++;
     }
-    inChar = fgetc(fp);
   }
 
-  fclose(fp);
+  // clean up any wasted memory
+  *opcodes = realloc(*opcodes, opCount * sizeof(OPCODE));
 
+  fclose(fp);
   return opCount;
 }
 
-OPCODE getOpcode(char inChar)
-{
+OPCODE getOpcode(char inChar) {
   OPCODE opcode = NONE;
   //printf("%c", inChar);
 
