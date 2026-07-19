@@ -2,3 +2,5 @@
 *.o
 *.e
 out.c
+web/bf.js
+web/bf.wasm
