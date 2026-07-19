@@ -63,7 +63,9 @@ int main(int argc, char *argv[]) {
       break;
     case INPUT: {
       int ch = getchar();
-      *ptr = (ch == EOF) ? 0 : (char)ch;
+      // -1 (not 0) on EOF: programs like rot13.bf use the `,+[...]` idiom,
+      // which only terminates its read loop if EOF wraps back to 0 after the +1.
+      *ptr = (ch == EOF) ? (char)-1 : (char)ch;
       break;
     }
     case LOOP_START:
