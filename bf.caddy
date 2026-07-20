@@ -1,0 +1,17 @@
+bf.tjreigh.mobi {
+	encode zstd gzip
+
+	root * /srv/bf/app/web
+	file_server
+
+	header {
+		-Server
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "no-referrer"
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'"
+		Strict-Transport-Security "max-age=31536000"
+	}
+
+	log
+}
