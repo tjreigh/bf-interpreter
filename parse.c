@@ -9,7 +9,9 @@ int parse(char filename[], OPCODE **opcodes) {
   int opCount = 0;
 
   *opcodes = malloc(capacity * sizeof(OPCODE));
-  if (opcodes == NULL) {
+  // check *opcodes (the malloc result), not opcodes (the parameter's own
+  // address, which is never NULL) — this used to never actually fire.
+  if (*opcodes == NULL) {
     fprintf(stderr, "Memory allocation failed\n");
     return -1;
   }
